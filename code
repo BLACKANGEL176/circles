@@ -1,1 +1,93 @@
-var thing = 90
+# this works in godot 3.5.1 idk if it works in 4+
+# i learned most of this code from a tutorial by AJ08Coder on youtube go check him out
+
+var x : int
+var y : int
+var playpos
+var target
+var randnum
+var player
+enum {
+	CIRCLE1
+	WANDER
+}
+
+state = WANDER
+
+var enemies = []
+var cenemies
+
+func _ready():
+	var nrn = RandomNumberGenerator.new()
+	nrn.randomize()
+	randnum = nrn.randf()
+
+func _process(delta):
+		if enemies != []:
+			state = CIRCLE1
+    if enemies == []:
+			state = WANDER
+		match state:
+			CIRCLE1:
+				move(get_c_position(randnum),delta) # you can also just put the player position in the move function
+			WANDER:
+				move(targ(randnum),delta)
+
+
+# warning-ignore:shadowed_variable
+func move(target, delta):
+	var dir = (target - global_position).normalized()
+	var dv = dir * speed
+	var steer = (dv - velo) * delta * 2.5
+	velo += steer
+	velo = move_and_slide(velo)
+
+
+func get_c_position(random):
+	if cenemies:
+		if enemies:
+			if cenemies == enemies[0]:
+				target = cenemies
+				var cirlce = target.global_position
+				var radius = 100 #Distance from center of circle
+				var angle = random * PI * 2;
+				x = circle.x + cos(angle) * radius
+				y = circle.y + sin(angle) * radius;
+				if target != null:
+					angle = global_position.angle_to_point(target.global_position) # this is for sprites if you want them to look side to side
+				if a:
+					if abs(angle) > PI/2:
+						scale.y = 1
+					else:
+						scale.y = -1
+	return Vector2(x, y)
+
+func targ(rand):
+	target = self
+	var circle = target.global_position
+	var radius = 100 #Distance from center of the circle
+	var angle = rand * PI * 2;
+	x = circle.x + cos(angle) * radius
+	y = circle.y + sin(angle) * radius;
+	
+	return Vector2(x,y)
+
+
+func _on_Timer4_timeout() -> void: # make sure to have on autostart
+	var nrn = RandomNumberGenerator.new()
+	nrn.randomize()
+	randnum = nrn.randf()
+
+
+func _on_Area2D2_area_entered(area: Area2D) -> void: # i usually make the collision2D shape big but you can do it how you like
+	if area.is_in_group("player"):
+		friends.append(area)
+
+
+func _on_Area2D2_area_exited(area: Area2D) -> void:
+	if area.is_in_group("player"):
+		friends.erase(area)
+
+
+
+
